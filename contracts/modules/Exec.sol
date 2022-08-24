@@ -100,6 +100,13 @@ contract Exec is BaseLogic {
         if (status == DEFERLIQUIDITY__DIRTY) checkLiquidity(account);
     }
 
+    /// @notice Call defer liquidity check callback, to perform a flashloan deferring using batchDispatch so you can defer the liquidity check on multiple accounts
+    /// @param data Passed through to the onDeferredLiquidityCheck() callback, so contracts don't need to store transient data in storage
+    function callDeferLiquidityCheckCallback(bytes memory data) external reentrantOK {
+        address msgSender = unpackTrailingParamMsgSender();
+        IDeferredLiquidityCheck(msgSender).onDeferredLiquidityCheck(data);
+    }
+
     /// @notice Execute several operations in a single transaction
     /// @param items List of operations to execute
     /// @param deferLiquidityChecks List of user accounts to defer liquidity checks for
